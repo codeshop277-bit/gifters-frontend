@@ -1,7 +1,27 @@
 "use client";
-import { useState } from "react";
+import React, { useState } from "react";
 
-export default function AddItem() {
+type AddItemProps = {
+    handleClose: () => void,
+}
+
+type Details = {
+    name: string,
+    link: string,
+    price: number,
+    description: string
+}
+
+const AddItem: React.FC<AddItemProps> = ({handleClose}) => {
+
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
+    const [price, setPrice] = useState(0)
+    const [link, setLink] = useState("");
+
+     const handleAddItem = (details: Details) => {
+        console.log(details)
+    }
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
@@ -10,6 +30,7 @@ export default function AddItem() {
                 {/* Close button */}
                 <button
                     className="absolute top-2 right-3 text-gray-400 hover:text-white text-lg"
+                    onClick={() => handleClose()}
                 >
                     ✕
                 </button>
@@ -24,25 +45,33 @@ export default function AddItem() {
                     <input
                         type="text"
                         placeholder="Name"
+                        onChange={(e) => setName(e.target.value)}
                         className="w-full px-3 py-2 rounded-md bg-[#162463] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                     <input
                         type="text"
                         placeholder="Link"
+                         onChange={(e) => setLink(e.target.value)}
                         className="w-full px-3 py-2 rounded-md bg-[#162463] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                     <input
                         type="text"
                         placeholder="Description"
+                         onChange={(e) => setDescription(e.target.value)}
                         className="w-full px-3 py-2 rounded-md bg-[#162463] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                     <input
                         type="number"
                         placeholder="Price"
+                         onChange={(e) => setPrice(Number(e.target.value))}
                         className="w-full px-3 py-2 rounded-md bg-[#162463] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                     <button
                         type="submit"
+                        onClick={() => {
+                            const details = {name, link, description,  price}
+                            handleAddItem(details)
+                        }}
                         className="w-full py-2 rounded-md bg-blue-500 hover:bg-blue-600 text-white font-medium"
                     >
                         Add item
@@ -52,3 +81,5 @@ export default function AddItem() {
         </div>
     );
 }
+
+export default AddItem;

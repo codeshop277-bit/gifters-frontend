@@ -1,10 +1,14 @@
 // components/FullPageSpinner.tsx
 'use client';
 
+import useUserStore from "../../../store/appstore";
 import DashboardContents from "./dashboardContents";
 
 // app/page.tsx (Next.js 13+ with App Router)
 export default function Home() {
+
+  const {userDetails} = useUserStore();
+  console.log(userDetails)
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0f1c52] to-[#1c2a6c] flex flex-col">
 

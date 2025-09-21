@@ -2,9 +2,14 @@
 import { useState } from "react";
 import AddItem from "./addItem";
 
+
 export default function DashboardContents() {
     const [isOpen, setIsOpen] = useState(false);
+    const handleClose = () => {
+        setIsOpen(false);
+    }
 
+   
     return (
         <div>
             {/* Body */}
@@ -21,7 +26,7 @@ export default function DashboardContents() {
 
             {/* Popup Modal */}
             {isOpen && (
-                <AddItem />
+                <AddItem  handleClose={handleClose} />
             )}
         </div>
     );
