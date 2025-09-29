@@ -5,7 +5,6 @@ import { useState } from "react";
 import { fetchLoginDetails } from "../services/auth";
 import FullPageSpinner from "../../../utils/spinner";
 import { useRouter } from "next/navigation";
-import useUserStore from "../../../store/appstore";
 
 export default function LoginPage() {
 
@@ -13,7 +12,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loader, setLoader] = useState(false);
   const router = useRouter();
-  const {setUserDetails} = useUserStore();
 
   const handleLogin = () => {
     setLoader(true);
@@ -23,7 +21,6 @@ export default function LoginPage() {
     };
 
     const login = fetchLoginDetails(credentials).then((details: any) => {
-      setUserDetails(details?.data)
       router.push("/dashboard");
       setLoader(false);
     });
