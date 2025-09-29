@@ -5,6 +5,7 @@ import { useState } from "react";
 import { registerUserDetails } from "../services/auth";
 import { useRouter } from "next/navigation";
 import FullPageSpinner from "../../../utils/spinner";
+import { useRegisterMutation } from "../../../services/api";
 
 export default function SignupPage() {
   const [name, setName] = useState("");
@@ -13,20 +14,16 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const router = useRouter();
   const [loader, setLoader] = useState(false);
+  const [register, {isLoading, error}] = useRegisterMutation()
 
-  const handleRegister = () => {
+  const handleRegister = async() => {
     if(password === confirmPassword){
-    setLoader(true);
-      const userDetails = {
-        name, email, password
-      }
-      const register = registerUserDetails(userDetails).then((details) => {
-        console.log(details);
+      try{
+        await register({name, email, password}).unwrap();
         router.push("/login");
-        setLoader(false);
-
-      });
-      console.log(register);
+      }catch(err){
+        console.log("Register failed", err)
+      }
     }else{
       window.alert("Password does not match")
     }

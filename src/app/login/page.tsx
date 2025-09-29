@@ -5,6 +5,7 @@ import { useState } from "react";
 import { fetchLoginDetails } from "../services/auth";
 import FullPageSpinner from "../../../utils/spinner";
 import { useRouter } from "next/navigation";
+import { useLoginMutation } from "../../../services/api";
 
 export default function LoginPage() {
 
@@ -12,18 +13,25 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loader, setLoader] = useState(false);
   const router = useRouter();
+  const [login, {isLoading, error}] = useLoginMutation()
 
-  const handleLogin = () => {
-    setLoader(true);
-    const credentials = {
-      email: email,
-      password: password
-    };
-
-    const login = fetchLoginDetails(credentials).then((details: any) => {
+  const handleLogin = async () => {
+    try{
+      await login({email, password}).unwrap();
       router.push("/dashboard");
-      setLoader(false);
-    });
+    }catch(err){
+      console.log("Login failed", err)
+    }
+    // setLoader(true);
+    // const credentials = {
+    //   email: email,
+    //   password: password
+    // };
+
+    // const login = fetchLoginDetails(credentials).then((details: any) => {
+    //   router.push("/dashboard");
+    //   setLoader(false);
+    // });
    
   }
   return (
@@ -31,7 +39,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md bg-[#0c1535]/90 text-white rounded-2xl shadow-2xl p-8 backdrop-blur">
         <h1 className="text-2xl font-bold mb-6 text-center">Log In</h1>
       {
-        loader && <FullPageSpinner />
+        isLoading && <FullPageSpinner />
       }
         <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
           <div>
