@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseUrl } from "../utils/baseurl";
 import { RootState } from "./store";
-import { setCredentials } from "../store/authSlice";
+import { setCredentials, setGiftsList } from "../store/authSlice";
 
 
 type LoginRequest = { email: string; password: string };
@@ -56,8 +56,43 @@ export const api = createApi({
 
                 }
             }
+        }),
+
+        postGifts: builder.mutation({
+            query: ({payload, credentails}) => ({
+                url: `gifts/add/${credentails.user.id}`,
+                method: "POST",
+                body: payload,
+                headers: {
+                    Authorization: `Bearer ${credentails.access_token}`
+                }
+            }),
+            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+                try {
+                    const { data } = await queryFulfilled;
+                    dispatch(setCredentials(data))
+                } catch {
+
+                }
+            }
+        }),
+
+         getGiftsList: builder.mutation({
+            query: (payload) => ({
+                url: "gifts/fetch",
+                method: "GET",
+                body: payload
+            }),
+            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+                try {
+                    const { data } = await queryFulfilled;
+                    dispatch(setGiftsList(data))
+                } catch {
+
+                }
+            }
         })
     })
 })
 
-export const { useLoginMutation, useRegisterMutation } = api;
+export const { useLoginMutation, useRegisterMutation, usePostGiftsMutation, useGetGiftsListMutation } = api;

@@ -4,13 +4,19 @@ type User = {
     name: string,
     email: string
 }
+type Gifts = {
+    name: string,
+    link: string
+}
 type AuthState = {
     user: User | null,
-    access_token: string | null
+    credentials: string | null,
+    giftsList: Gifts[] | []
 }
 const initialState: AuthState = {
     user: null,
-    access_token: ""
+    credentials: "",
+    giftsList: []
 }
 
 const authSlice = createSlice({
@@ -18,10 +24,13 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         setCredentials: (state, action) => {
-            state.access_token = action.payload.access_token
+            state.credentials = action.payload
+        },
+        setGiftsList: (state, action) => {
+            state.giftsList = action.payload
         }
     }
 })
 
-export const { setCredentials } = authSlice.actions;
+export const { setCredentials, setGiftsList } = authSlice.actions;
 export default authSlice.reducer;

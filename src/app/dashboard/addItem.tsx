@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import { usePostGiftsMutation } from "../../../services/api";
+import { useSelector } from "react-redux";
 
 type AddItemProps = {
     handleClose: () => void,
@@ -9,18 +11,28 @@ type Details = {
     name: string,
     link: string,
     price: number,
-    description: string
+    note: string
 }
 
 const AddItem: React.FC<AddItemProps> = ({handleClose}) => {
 
     const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
+    const [note, setDescription] = useState("");
     const [price, setPrice] = useState(0)
     const [link, setLink] = useState("");
 
-     const handleAddItem = (details: Details) => {
+    const [postGifts, {isLoading, error}] = usePostGiftsMutation()
+    const authState: any = useSelector((state : any) => state.auth)
+
+     const handleAddItem = async (details: Details) => {
         console.log(details)
+        const credentials: any = authState.credentials;
+        console.log(credentials)
+        try{
+            await postGifts({details, credentials}).unwrap()
+        }catch(e){
+            console.log(e)
+        }
     }
 
     return (
@@ -68,8 +80,8 @@ const AddItem: React.FC<AddItemProps> = ({handleClose}) => {
                     />
                     <button
                         type="submit"
-                        onClick={() => {
-                            const details = {name, link, description,  price}
+                        onClick={(e) => {
+                            const details = {name, link, note,  price}
                             handleAddItem(details)
                         }}
                         className="w-full py-2 rounded-md bg-blue-500 hover:bg-blue-600 text-white font-medium"
