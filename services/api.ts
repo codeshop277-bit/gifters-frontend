@@ -18,7 +18,7 @@ export const api = createApi({
     reducerPath: "api",
     baseQuery: fetchBaseQuery({
         baseUrl: baseUrl,
-        prepareHeaders: (headers, { getState}) => {
+        prepareHeaders: (headers, { getState }) => {
             console.log(getState)
             // const token = (getState as any).auth.access_token
             // if (token) headers.set("Authorization", `Bearer ${token}`);
@@ -35,11 +35,12 @@ export const api = createApi({
                 method: "POST",
                 body: credentials
             }),
-            async onQueryStarted(arg, {dispatch, queryFulfilled}){
-                try{
+            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+                try {
                     const { data } = await queryFulfilled;
+                    localStorage.setItem("userData", JSON.stringify(data));
                     dispatch(setCredentials(data))
-                }catch {}
+                } catch { }
             }
         }),
         register: builder.mutation<AuthResponse, RegisterRequest>({
@@ -47,25 +48,6 @@ export const api = createApi({
                 url: "users/register",
                 method: "POST",
                 body: credentials
-            }),
-            async onQueryStarted(arg, {dispatch, queryFulfilled}){
-                try{
-                    const { data } = await queryFulfilled;
-                    dispatch(setCredentials(data))
-                }catch {
-
-                }
-            }
-        }),
-
-        postGifts: builder.mutation({
-            query: ({payload, credentails}) => ({
-                url: `gifts/add/${credentails.user.id}`,
-                method: "POST",
-                body: payload,
-                headers: {
-                    Authorization: `Bearer ${credentails.access_token}`
-                }
             }),
             async onQueryStarted(arg, { dispatch, queryFulfilled }) {
                 try {
@@ -77,15 +59,37 @@ export const api = createApi({
             }
         }),
 
-         getGiftsList: builder.mutation({
-            query: (payload) => ({
-                url: "gifts/fetch",
-                method: "GET",
-                body: payload
+        postGifts: builder.mutation({
+            query: ({ details, credentials }) => ({
+                url: `gifts/add/${credentials.user.id}`,
+                method: "POST",
+                body: details,
+                headers: {
+                    Authorization: `Bearer ${credentials.access_token}`,
+                },
             }),
             async onQueryStarted(arg, { dispatch, queryFulfilled }) {
                 try {
                     const { data } = await queryFulfilled;
+                    dispatch(setCredentials(data))
+                } catch {
+
+                }
+            }
+        }),
+
+        getGiftsList: builder.mutation({
+            query: ({credentials}) => ({
+                url: `gifts/fetch/${credentials.user.id}`,
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${credentials.access_token}`
+                }
+            }),
+            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+                try {
+                    const { data } = await queryFulfilled;
+                    console.log(data);
                     dispatch(setGiftsList(data))
                 } catch {
 
