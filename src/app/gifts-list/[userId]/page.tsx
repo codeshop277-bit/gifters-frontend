@@ -2,9 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useSelector } from "react-redux";
-import { useGetGiftsListMutation } from '../../../services/api';
-import AddItem from '../dashboard/addItem';
-import ShareLink from './shareLink';
+import { useGetGiftsListMutation } from '../../../../services/api';
 
 interface Gift {
     name: string;
@@ -14,16 +12,15 @@ interface Gift {
 }
 
 
-export default function GiftsList() {
+export default function UsersGiftsList() {
     // Example data — replace or fetch dynamically
 
     const authState = useSelector((state: any) => state.auth)
     const [gifts, { isLoading, error }] = useGetGiftsListMutation();
     const storedUser = localStorage.getItem("userData");
-    const [isOpen, setIsOpen] = useState(false);
     const [openShare, setOpenShare] = useState(false);
-    const [linkUrl, setLinkUrl] = useState("");
     const userData = storedUser ? JSON.parse(storedUser) : null;
+    console.log(userData)
 
     useEffect(() => {
         fetchGiftsList()
@@ -37,19 +34,6 @@ export default function GiftsList() {
             console.log(e)
         }
     }
-    const handleClose = () => {
-        setIsOpen(false);
-    }
-    const handleShareClose = () => {
-        setOpenShare(false);
-    }
-
-    const handleShareList = () => {
-        setLinkUrl(`${window.origin}/gifts-list/${userData.user.id}`);
-        setOpenShare(true);
-    }
-
-
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#0f1c52] to-[#1c2a6c] flex flex-col text-white">
@@ -67,21 +51,7 @@ export default function GiftsList() {
 
             {/* Main Content */}
             <main className="flex-1 flex flex-col items-center justify-start text-center px-4 py-12">
-                <div className="w-full text-end">
-                    <button
-                        onClick={() => setIsOpen(true)}
-                        className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md"
-                    >
-                        + Add Item
-                    </button>
-                    <button
-                        onClick={() => handleShareList()}
-                        className="px-6 py-3 ml-6 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md"
-                    >
-                        Share List
-                    </button>
-                </div>
-                <h1 className="text-3xl font-bold mb-8 text-white-400">Gifts List</h1>
+                <h1 className="text-3xl font-bold mb-8 text-white-400">{userData.user.name}'s Gifts List</h1>
 
                 <div className="w-full max-w-5xl overflow-x-auto rounded-2xl shadow-lg bg-[#1a2a6c]/50 backdrop-blur-sm">
                     <table className="w-full border-collapse text-left">
@@ -91,6 +61,7 @@ export default function GiftsList() {
                                 <th className="py-3 px-4 border-b border-[#33427a]">Link</th>
                                 <th className="py-3 px-4 border-b border-[#33427a]">Price</th>
                                 <th className="py-3 px-4 border-b border-[#33427a]">Claimed</th>
+                                <th className="py-3 px-4 border-b border-[#33427a]">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -125,17 +96,19 @@ export default function GiftsList() {
                                                 {gift.claimed ? "Yes" : "No"}
                                             </span>
                                         </td>
+                                        <td className="py-3 px-4 border-b border-[#2f3f7a] text-gray-200">
+                                            <button
+                                               // onClick={() => ()}
+                                                className="px-4 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md"
+                                            >
+                                                Claim
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                         </tbody>
                     </table>
                 </div>
-                {isOpen && (
-                    <AddItem handleClose={handleClose} />
-                )}
-                {openShare && (
-                    <ShareLink linkUrl={linkUrl} handleClose={handleShareClose} />
-                )}
             </main>
         </div>
     );
