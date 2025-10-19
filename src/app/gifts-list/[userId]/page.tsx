@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useSelector } from "react-redux";
-import { useGetGiftsListMutation } from '../../../../services/api';
+import { useClaimGiftMutation, useGetGiftsListMutation } from '../../../../services/api';
 
 interface Gift {
     name: string;
@@ -17,14 +17,15 @@ export default function UsersGiftsList() {
 
     const authState = useSelector((state: any) => state.auth)
     const [gifts, { isLoading, error }] = useGetGiftsListMutation();
-    const storedUser = localStorage.getItem("userData");
+    const [claimGift] = useClaimGiftMutation();
+    const storedUser = localStorage?.getItem("userData");
     const [openShare, setOpenShare] = useState(false);
     const userData = storedUser ? JSON.parse(storedUser) : null;
     console.log(userData)
 
     useEffect(() => {
         fetchGiftsList()
-    }, [])
+    }, [authState.refreshList])
 
     const fetchGiftsList = async () => {
         const credentials = userData;
@@ -33,6 +34,15 @@ export default function UsersGiftsList() {
         } catch (e) {
             console.log(e)
         }
+    }
+    const handleClaimGift = async (gift: Gift) => {
+        const credentials = userData;
+        try {
+            await claimGift({ credentials, gift }).unwrap()
+        } catch (e) {
+            console.log(e)
+        }
+
     }
 
     return (
@@ -98,7 +108,7 @@ export default function UsersGiftsList() {
                                         </td>
                                         <td className="py-3 px-4 border-b border-[#2f3f7a] text-gray-200">
                                             <button
-                                               // onClick={() => ()}
+                                                onClick={() => handleClaimGift(gift)}
                                                 className="px-4 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md"
                                             >
                                                 Claim

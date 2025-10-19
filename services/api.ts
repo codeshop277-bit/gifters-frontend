@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseUrl } from "../utils/baseurl";
 import { RootState } from "./store";
-import { setCredentials, setGiftsList } from "../store/authSlice";
+import { refreshGiftList, setCredentials, setGiftsList } from "../store/authSlice";
 
 
 type LoginRequest = { email: string; password: string };
@@ -95,8 +95,29 @@ export const api = createApi({
 
                 }
             }
+        }),
+        claimGift: builder.mutation({
+            query: ({credentials, gift}) => ({
+                url: `gifts/claim/${gift.id}/${credentials.user.id}`,
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${credentials.access_token}`
+                }
+            }),
+            async onQueryStarted(arg, {dispatch, queryFulfilled, getState}) {
+                const state: any = getState();
+                const authState = state.auth;
+                try{
+                    const { data } = await queryFulfilled;
+                    console.log(data);
+                    dispatch(refreshGiftList(!authState.refreshList));
+                }catch{
+
+                }
+            }
         })
+
     })
 })
 
-export const { useLoginMutation, useRegisterMutation, usePostGiftsMutation, useGetGiftsListMutation } = api;
+export const { useLoginMutation, useRegisterMutation, usePostGiftsMutation, useGetGiftsListMutation, useClaimGiftMutation } = api;
