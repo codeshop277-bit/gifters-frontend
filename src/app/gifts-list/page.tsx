@@ -3,12 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from "react-redux";
 import { useGetGiftsListMutation } from '../../../services/api';
+import AddItem from '../dashboard/addItem';
 
 interface Gift {
-  name: string;
-  link: string;
-  price: number;
-  claimed: boolean;
+    name: string;
+    link: string;
+    price: number;
+    claimed: boolean;
 }
 
 
@@ -18,6 +19,7 @@ export default function GiftsList() {
     const authState = useSelector((state: any) => state.auth)
     const [gifts, { isLoading, error }] = useGetGiftsListMutation();
     const storedUser = localStorage.getItem("userData");
+    const [isOpen, setIsOpen] = useState(false);
     const userData = storedUser ? JSON.parse(storedUser) : null;
 
     useEffect(() => {
@@ -32,7 +34,11 @@ export default function GiftsList() {
             console.log(e)
         }
     }
- 
+    const handleClose = () => {
+        setIsOpen(false);
+    }
+
+
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#0f1c52] to-[#1c2a6c] flex flex-col text-white">
@@ -50,6 +56,14 @@ export default function GiftsList() {
 
             {/* Main Content */}
             <main className="flex-1 flex flex-col items-center justify-start text-center px-4 py-12">
+                <div className="w-full text-end">
+                    <button
+                        onClick={() => setIsOpen(true)}
+                        className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md"
+                    >
+                        + Add Item
+                    </button>
+                </div>
                 <h1 className="text-3xl font-bold mb-8 text-white-400">Gifts List</h1>
 
                 <div className="w-full max-w-5xl overflow-x-auto rounded-2xl shadow-lg bg-[#1a2a6c]/50 backdrop-blur-sm">
@@ -63,42 +77,45 @@ export default function GiftsList() {
                             </tr>
                         </thead>
                         <tbody>
-                            { 
-                            authState.giftsList.length > 0 &&
-                            authState.giftsList.map((gift: Gift, index: number) => (
-                                <tr
-                                    key={index}
-                                    className="hover:bg-[#2a3c8a]/40 transition-colors duration-200"
-                                >
-                                    <td className="py-3 px-4 border-b border-[#2f3f7a] font-medium">{gift.name}</td>
-                                    <td className="py-3 px-4 border-b border-[#2f3f7a]">
-                                        <a
-                                            href={gift.link}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-blue-300 hover:text-orange-400 underline"
-                                        >
-                                            Visit Site
-                                        </a>
-                                    </td>
-                                    <td className="py-3 px-4 border-b border-[#2f3f7a] text-gray-200">
-                                        ₹{gift.price.toLocaleString()}
-                                    </td>
-                                    <td className="py-3 px-4 border-b border-[#2f3f7a]">
-                                        <span
-                                            className={`px-3 py-1 rounded-full text-sm font-semibold ${gift.claimed
+                            {
+                                authState.giftsList.length > 0 &&
+                                authState.giftsList.map((gift: Gift, index: number) => (
+                                    <tr
+                                        key={index}
+                                        className="hover:bg-[#2a3c8a]/40 transition-colors duration-200"
+                                    >
+                                        <td className="py-3 px-4 border-b border-[#2f3f7a] font-medium">{gift.name}</td>
+                                        <td className="py-3 px-4 border-b border-[#2f3f7a]">
+                                            <a
+                                                href={gift.link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-blue-300 hover:text-orange-400 underline"
+                                            >
+                                                Visit Site
+                                            </a>
+                                        </td>
+                                        <td className="py-3 px-4 border-b border-[#2f3f7a] text-gray-200">
+                                            ₹{gift.price.toLocaleString()}
+                                        </td>
+                                        <td className="py-3 px-4 border-b border-[#2f3f7a]">
+                                            <span
+                                                className={`px-3 py-1 rounded-full text-sm font-semibold ${gift.claimed
                                                     ? 'bg-green-600/70 text-white'
                                                     : 'bg-red-600/70 text-white'
-                                                }`}
-                                        >
-                                            {gift.claimed ? "Yes" : "No"}
-                                        </span>
-                                    </td>
-                                </tr>
-                            ))}
+                                                    }`}
+                                            >
+                                                {gift.claimed ? "Yes" : "No"}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
                         </tbody>
                     </table>
                 </div>
+                {isOpen && (
+                    <AddItem handleClose={handleClose} />
+                )}
             </main>
         </div>
     );

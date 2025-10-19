@@ -18,7 +18,7 @@ export default function LoginPage() {
   const handleLogin = async () => {
     try{
       await login({email, password}).unwrap();
-      router.push("/dashboard");
+      router.push("/gifts-list");
     }catch(err){
       console.log("Login failed", err)
     }

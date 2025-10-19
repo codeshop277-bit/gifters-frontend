@@ -23,10 +23,12 @@ const AddItem: React.FC<AddItemProps> = ({handleClose}) => {
 
     const [postGifts, {isLoading, error}] = usePostGiftsMutation()
     const authState: any = useSelector((state : any) => state.auth)
+    const storedUser = localStorage.getItem("userData");
+    const userData = storedUser ? JSON.parse(storedUser) : null;
 
      const handleAddItem = async (details: Details) => {
         console.log(details)
-        const credentials: any = authState.credentials;
+        const credentials: any = userData;
         console.log(credentials)
         try{
             await postGifts({details, credentials}).unwrap()
