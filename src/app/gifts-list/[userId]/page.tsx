@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from "react-redux";
 import { useClaimGiftMutation, useGetGiftsListMutation } from '../../../../services/api';
+import GoogleLoginButton from '@/app/components/page';
 
 interface Gift {
     name: string;
@@ -18,7 +19,7 @@ export default function UsersGiftsList() {
     const authState = useSelector((state: any) => state.auth)
     const [gifts, { isLoading, error }] = useGetGiftsListMutation();
     const [claimGift] = useClaimGiftMutation();
-    const storedUser = localStorage?.getItem("userData");
+    const storedUser = window?.localStorage?.getItem("userData");
     const [openShare, setOpenShare] = useState(false);
     const userData = storedUser ? JSON.parse(storedUser) : null;
     console.log(userData)
@@ -62,6 +63,7 @@ export default function UsersGiftsList() {
             {/* Main Content */}
             <main className="flex-1 flex flex-col items-center justify-start text-center px-4 py-12">
                 <h1 className="text-3xl font-bold mb-8 text-white-400">{userData.user.name}'s Gifts List</h1>
+                <GoogleLoginButton />
 
                 <div className="w-full max-w-5xl overflow-x-auto rounded-2xl shadow-lg bg-[#1a2a6c]/50 backdrop-blur-sm">
                     <table className="w-full border-collapse text-left">
