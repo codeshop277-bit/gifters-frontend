@@ -79,7 +79,7 @@ export const api = createApi({
         }),
 
         getGiftsList: builder.mutation({
-            query: ({credentials}) => ({
+            query: ({ credentials }) => ({
                 url: `gifts/fetch/${credentials.user.id}`,
                 method: "GET",
                 headers: {
@@ -97,27 +97,44 @@ export const api = createApi({
             }
         }),
         claimGift: builder.mutation({
-            query: ({credentials, gift}) => ({
+            query: ({ credentials, gift }) => ({
                 url: `gifts/claim/${gift.id}/${credentials.user.id}`,
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${credentials.access_token}`
                 }
             }),
-            async onQueryStarted(arg, {dispatch, queryFulfilled, getState}) {
+            async onQueryStarted(arg, { dispatch, queryFulfilled, getState }) {
                 const state: any = getState();
                 const authState = state.auth;
-                try{
+                try {
                     const { data } = await queryFulfilled;
                     console.log(data);
                     dispatch(refreshGiftList(!authState.refreshList));
-                }catch{
-
+                } catch {
                 }
+            }
+        }),
+        guestUserLogin: builder.mutation({
+            query: ({credentials }) => ({
+                url: "users/guest/login",
+                method: "POST",
+                body: credentials
+            }),
+            async onQueryStarted(arg, {dispatch, queryFulfilled, getState}){
+                const {data} = await queryFulfilled;
+                dispatch(setCredentials(data))
             }
         })
 
     })
 })
 
-export const { useLoginMutation, useRegisterMutation, usePostGiftsMutation, useGetGiftsListMutation, useClaimGiftMutation } = api;
+export const { 
+    useLoginMutation, 
+    useRegisterMutation, 
+    usePostGiftsMutation, 
+    useGetGiftsListMutation, 
+    useClaimGiftMutation,
+    useGuestUserLoginMutation
+} = api;

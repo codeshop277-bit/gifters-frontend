@@ -1,7 +1,16 @@
 "use client";
 import { useEffect } from "react";
+import { useGuestUserLoginMutation } from "../../../services/api";
+import { jwtDecode } from "jwt-decode";
 
+interface OauthResponse{
+  name: string,
+  email: string,
+  sub: string
+}
 export default function GoogleLoginButton() {
+
+  const [guestUser, {isLoading, error}] = useGuestUserLoginMutation()
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
@@ -35,8 +44,19 @@ export default function GoogleLoginButton() {
     return () => clearInterval(interval);
   }, []);
 
-  function handleCredentialResponse(response: any) {
-    console.log("Google ID Token:", response.credential);
+  const  handleCredentialResponse = async (response: any) => {
+    console.log("oauth response", response)
+    const decoded: OauthResponse = jwtDecode(response.credential)
+    console.log("decoded oauth response", decoded)
+    const credentials = {
+      name: decoded.name,
+      email: decoded.email,
+      provider_id: decoded.sub
+    }
+    try{
+      await guestUser({credentials}).unwrap()
+    }catch(e){
+    }
   }
 
   return <div id="googleButton" />;
