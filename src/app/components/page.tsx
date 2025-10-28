@@ -8,8 +8,11 @@ interface OauthResponse{
   email: string,
   sub: string
 }
-export default function GoogleLoginButton() {
-
+type GoogleProps = {
+  autoTrigger: boolean
+}
+const  GoogleLoginButton: React.FC<GoogleProps> = ({autoTrigger}) => {
+console.log(autoTrigger)
   const [guestUser, {isLoading, error}] = useGuestUserLoginMutation()
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -33,7 +36,11 @@ export default function GoogleLoginButton() {
             text: "signin_with",
           });
         }
-
+       if (autoTrigger) {
+        setTimeout(() => {
+          window.google.accounts.id.prompt();
+        }, 1000);
+      }
         clearInterval(interval);
       } catch (err) {
         console.log("Retrying GSI load...");
@@ -61,3 +68,4 @@ export default function GoogleLoginButton() {
 
   return <div id="googleButton" />;
 }
+export default GoogleLoginButton

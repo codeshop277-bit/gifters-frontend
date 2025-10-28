@@ -25,7 +25,10 @@ export default function UsersGiftsList() {
     console.log(userData)
 
     useEffect(() => {
-        fetchGiftsList()
+        console.log('userData', userData)
+        if (userData !== null) {
+            fetchGiftsList()
+        }
     }, [authState.refreshList])
 
     const fetchGiftsList = async () => {
@@ -62,9 +65,12 @@ export default function UsersGiftsList() {
 
             {/* Main Content */}
             <main className="flex-1 flex flex-col items-center justify-start text-center px-4 py-12">
-                <h1 className="text-3xl font-bold mb-8 text-white-400">{userData.user.name}'s Gifts List</h1>
-                <GoogleLoginButton />
-
+                {
+                    userData != null ?
+                    <h1 className="text-3xl font-bold mb-8 text-white-400">{userData.user.name}'s Gifts List</h1> :
+                    <GoogleLoginButton autoTrigger={true} />
+                }
+                
                 <div className="w-full max-w-5xl overflow-x-auto rounded-2xl shadow-lg bg-[#1a2a6c]/50 backdrop-blur-sm">
                     <table className="w-full border-collapse text-left">
                         <thead>

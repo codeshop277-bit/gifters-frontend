@@ -123,7 +123,11 @@ export const api = createApi({
             }),
             async onQueryStarted(arg, {dispatch, queryFulfilled, getState}){
                 const {data} = await queryFulfilled;
+                const state: any = getState();
+                const authState = state.auth;
+                localStorage.setItem("userData", JSON.stringify(data));
                 dispatch(setCredentials(data))
+                dispatch(refreshGiftList(!authState.refreshList));
             }
         })
 
