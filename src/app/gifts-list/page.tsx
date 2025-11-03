@@ -19,7 +19,7 @@ export default function GiftsList() {
 
     const authState = useSelector((state: any) => state.auth)
     const [gifts, { isLoading, error }] = useGetGiftsListMutation();
-    const storedUser = localStorage.getItem("userData");
+    const storedUser = window?.localStorage.getItem("userData");
     const [isOpen, setIsOpen] = useState(false);
     const [openShare, setOpenShare] = useState(false);
     const [linkUrl, setLinkUrl] = useState("");
