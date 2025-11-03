@@ -12,6 +12,15 @@ interface Gift {
     claimed: boolean;
 }
 
+interface User{
+    id: string,
+    name: string,
+    email: string
+}
+interface userData {
+    user: User
+    access_token: string
+}
 
 export default function UsersGiftsList() {
     // Example data — replace or fetch dynamically
@@ -19,19 +28,19 @@ export default function UsersGiftsList() {
     const authState = useSelector((state: any) => state.auth)
     const [gifts, { isLoading, error }] = useGetGiftsListMutation();
     const [claimGift] = useClaimGiftMutation();
-    const storedUser = window?.localStorage?.getItem("userData");
     const [openShare, setOpenShare] = useState(false);
-    const userData = storedUser ? JSON.parse(storedUser) : null;
-    console.log(userData)
-
+    const [userData, setUserData] = useState<userData | null>(null);
+  
     useEffect(() => {
-        console.log('userData', userData)
+        const storedUser = window?.localStorage.getItem("userData");
+        const creds = storedUser ? JSON.parse(storedUser) : null;
+        setUserData(creds);
         if (userData !== null) {
-            fetchGiftsList()
+            fetchGiftsList(creds)
         }
     }, [authState.refreshList])
 
-    const fetchGiftsList = async () => {
+    const fetchGiftsList = async (creds: userData) => {
         const credentials = userData;
         try {
             await gifts({ credentials }).unwrap()

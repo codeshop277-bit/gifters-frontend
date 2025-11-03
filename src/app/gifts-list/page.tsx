@@ -12,6 +12,15 @@ interface Gift {
     price: number;
     claimed: boolean;
 }
+interface User{
+    id: string,
+    name: string,
+    email: string
+}
+interface userData {
+    user: User
+    access_token: string
+}
 
 
 export default function GiftsList() {
@@ -19,18 +28,22 @@ export default function GiftsList() {
 
     const authState = useSelector((state: any) => state.auth)
     const [gifts, { isLoading, error }] = useGetGiftsListMutation();
-    const storedUser = window?.localStorage.getItem("userData");
+    
     const [isOpen, setIsOpen] = useState(false);
     const [openShare, setOpenShare] = useState(false);
     const [linkUrl, setLinkUrl] = useState("");
-    const userData = storedUser ? JSON.parse(storedUser) : null;
+    const [userData, setUserData] = useState<userData | null>(null);
+
 
     useEffect(() => {
-        fetchGiftsList()
+        const storedUser = window?.localStorage.getItem("userData");
+        const creds = storedUser ? JSON.parse(storedUser) : null;
+        setUserData(creds);
+        fetchGiftsList(creds)
     }, [])
 
-    const fetchGiftsList = async () => {
-        const credentials = userData;
+    const fetchGiftsList = async (creds: userData) => {
+        const credentials = creds;
         try {
             await gifts({ credentials }).unwrap()
         } catch (e) {
@@ -45,7 +58,7 @@ export default function GiftsList() {
     }
 
     const handleShareList = () => {
-        setLinkUrl(`${window.origin}/gifts-list/${userData.user.id}`);
+        setLinkUrl(`${window.origin}/gifts-list/${userData?.user.id}`);
         setOpenShare(true);
     }
 
