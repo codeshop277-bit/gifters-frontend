@@ -35,13 +35,13 @@ export default function UsersGiftsList() {
         const storedUser = window?.localStorage.getItem("userData");
         const creds = storedUser ? JSON.parse(storedUser) : null;
         setUserData(creds);
-        if (userData !== null) {
+        if (creds !== null) {
             fetchGiftsList(creds)
         }
     }, [authState.refreshList])
 
     const fetchGiftsList = async (creds: userData) => {
-        const credentials = userData;
+        const credentials = creds;
         try {
             await gifts({ credentials }).unwrap()
         } catch (e) {
