@@ -12,6 +12,11 @@ export default function Home() {
         <div className="flex justify-between items-center mb-10">
           <h1 className="text-xl font-bold">Gifters</h1>
           <div className="space-x-4">
+             <Link href={"/learning"}>
+            <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-full text-sm font-medium">
+              Explore
+            </button>
+            </Link>
             <Link href={"/login"}>
             <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-full text-sm font-medium">
               Log in
