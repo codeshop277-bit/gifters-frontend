@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useSelector } from "react-redux";
-import { useClaimGiftMutation, useGetGiftsListMutation } from '../../../../services/api';
+import { useClaimGiftMutation, useGetGiftsListQuery } from '../../../../services/api';
 import GoogleLoginButton from '@/app/components/page';
 
 interface Gift {
@@ -12,7 +12,7 @@ interface Gift {
     claimed: boolean;
 }
 
-interface User{
+interface User {
     id: string,
     name: string,
     email: string
@@ -26,27 +26,55 @@ export default function UsersGiftsList() {
     // Example data — replace or fetch dynamically
 
     const authState = useSelector((state: any) => state.auth)
-    const [gifts, { isLoading, error }] = useGetGiftsListMutation();
+    const storedUser = window?.localStorage.getItem("userData");
+    const userData = storedUser ? JSON.parse(storedUser) : null;
+    const { data, isLoading, error , refetch} = useGetGiftsListQuery(
+        { credentials: userData },
+        {
+            refetchOnMountOrArgChange: true
+        }
+    )
     const [claimGift] = useClaimGiftMutation();
     const [openShare, setOpenShare] = useState(false);
-    const [userData, setUserData] = useState<userData | null>(null);
-  
+
+// import { useGetGiftsListQuery } from "@/store/api"
+
+// const { gifts } = useGetGiftsListQuery(
+//   { userId, token },
+//   {
+//     selectFromResult: ({ data }) => ({
+//       gifts: data
+//     })
+//   }
+// )
+// import { store } from "@/store"
+// import { api } from "@/store/api"
+
+// const state = store.getState()
+
+// const giftsResult =
+//   api.endpoints.getGiftsList.select({ userId, token })(state)
+
+// const gifts = giftsResult?.data
+
+// Accessing data from a query in RTK Query can be done in several ways, depending on the context of your component and how you want to manage the data. Here are some common methods:
+
+
     useEffect(() => {
-        const storedUser = window?.localStorage.getItem("userData");
-        const creds = storedUser ? JSON.parse(storedUser) : null;
-        setUserData(creds);
-        if (creds !== null) {
-            fetchGiftsList(creds)
+
+        // setUserData(creds);
+        if (userData !== null) {
+            refetch()
         }
     }, [authState.refreshList])
 
     const fetchGiftsList = async (creds: userData) => {
-        const credentials = creds;
-        try {
-            await gifts({ credentials }).unwrap()
-        } catch (e) {
-            console.log(e)
-        }
+        // const credentials = creds;
+        // try {
+        //     await gifts({ credentials }).unwrap()
+        // } catch (e) {
+        //     console.log(e)
+        // }
     }
     const handleClaimGift = async (gift: Gift) => {
         const credentials = userData;
@@ -76,10 +104,10 @@ export default function UsersGiftsList() {
             <main className="flex-1 flex flex-col items-center justify-start text-center px-4 py-12">
                 {
                     userData != null ?
-                    <h1 className="text-3xl font-bold mb-8 text-white-400">{userData.user.name}'s Gifts List</h1> :
-                    <GoogleLoginButton autoTrigger={true} />
+                        <h1 className="text-3xl font-bold mb-8 text-white-400">{userData.user.name}'s Gifts List</h1> :
+                        <GoogleLoginButton autoTrigger={true} />
                 }
-                
+
                 <div className="w-full max-w-5xl overflow-x-auto rounded-2xl shadow-lg bg-[#1a2a6c]/50 backdrop-blur-sm">
                     <table className="w-full border-collapse text-left">
                         <thead>

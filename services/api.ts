@@ -16,6 +16,7 @@ type AuthResponse = { user: User; access_token: string };
 //prepareHeaders - adds header to all request
 export const api = createApi({
     reducerPath: "api",
+     tagTypes: ["Gifts"],
     baseQuery: fetchBaseQuery({
         baseUrl: baseUrl,
         prepareHeaders: (headers, { getState }) => {
@@ -78,7 +79,7 @@ export const api = createApi({
             }
         }),
 
-        getGiftsList: builder.mutation({
+        getGiftsList: builder.query({
             query: ({ credentials }) => ({
                 url: `gifts/fetch/${credentials.user.id}`,
                 method: "GET",
@@ -86,15 +87,9 @@ export const api = createApi({
                     Authorization: `Bearer ${credentials.access_token}`
                 }
             }),
-            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-                try {
-                    const { data } = await queryFulfilled;
-                    console.log(data);
-                    dispatch(setGiftsList(data))
-                } catch {
-
-                }
-            }
+            providesTags: (result, error, arg) => [
+    { type: "Gifts", id: arg.credentials.user.id }
+  ]
         }),
         claimGift: builder.mutation({
             query: ({ credentials, gift }) => ({
@@ -138,7 +133,7 @@ export const {
     useLoginMutation, 
     useRegisterMutation, 
     usePostGiftsMutation, 
-    useGetGiftsListMutation, 
+    useGetGiftsListQuery, 
     useClaimGiftMutation,
     useGuestUserLoginMutation
 } = api;

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useSelector } from "react-redux";
-import { useGetGiftsListMutation } from '../../../services/api';
+import { useGetGiftsListQuery } from '../../../services/api';
 import AddItem from '../dashboard/addItem';
 import ShareLink from './shareLink';
 
@@ -27,29 +27,34 @@ export default function GiftsList() {
     // Example data — replace or fetch dynamically
 
     const authState = useSelector((state: any) => state.auth)
-    const [gifts, { isLoading, error }] = useGetGiftsListMutation();
+     const storedUser = window?.localStorage.getItem("userData");
+        const userData = storedUser ? JSON.parse(storedUser) : null;
+     const { data, isLoading, error } = useGetGiftsListQuery(
+           { credentials: userData },
+           {
+               refetchOnMountOrArgChange: true
+           }
+       )
     
     const [isOpen, setIsOpen] = useState(false);
     const [openShare, setOpenShare] = useState(false);
     const [linkUrl, setLinkUrl] = useState("");
-    const [userData, setUserData] = useState<userData | null>(null);
 
 
     useEffect(() => {
-        const storedUser = window?.localStorage.getItem("userData");
-        const creds = storedUser ? JSON.parse(storedUser) : null;
-        setUserData(creds);
-        fetchGiftsList(creds)
+       
+        // setUserData(creds);
+        // fetchGiftsList(creds)
     }, [])
 
-    const fetchGiftsList = async (creds: userData) => {
-        const credentials = creds;
-        try {
-            await gifts({ credentials }).unwrap()
-        } catch (e) {
-            console.log(e)
-        }
-    }
+    // const fetchGiftsList = async (creds: userData) => {
+    //     const credentials = creds;
+    //     try {
+    //         await gifts({ credentials }).unwrap()
+    //     } catch (e) {
+    //         console.log(e)
+    //     }
+    // }
     const handleClose = () => {
         setIsOpen(false);
     }
