@@ -83,3 +83,41 @@ EXPOSE 3000
 # Command that runs when container starts
 # Runs the generated Next.js standalone server
 CMD ["node", "server.js"]
+
+
+# 2️⃣ Build Image Locally
+# docker build -t my-next-app .
+# Test it:
+# docker run -p 3000:3000 my-next-app
+# Open:
+# http://localhost:3000
+# 3️⃣ Launch EC2 Instance
+# Go to:
+# 👉 Amazon Web Services
+# Choose:
+# Ubuntu 22.04
+# t2.micro (free tier)
+# Allow ports:
+# 22 (SSH)
+# 80 (HTTP)
+# 3000 (temporary testing)
+# 4️⃣ SSH Into EC2
+# ssh -i your-key.pem ubuntu@your-ec2-public-ip
+# 5️⃣ Install Docker on EC2
+# sudo apt update
+# sudo apt install docker.io -y
+# sudo systemctl start docker
+# sudo systemctl enable docker
+# sudo usermod -aG docker ubuntu
+# 6️⃣ Get Your Image to EC2
+# Option A (Beginner Friendly) — Build directly on EC2
+# Upload your project:
+# scp -i your-key.pem -r ./my-next-app ubuntu@EC2_IP:/home/ubuntu
+# Then inside EC2:
+# cd my-next-app
+# docker build -t my-next-app .
+# 7️⃣ Run Container on EC2
+# docker run -d -p 3000:3000 --name next-app my-next-app
+# Now open:
+# http://your-ec2-public-ip:3000
+# You should see your app 🔥
