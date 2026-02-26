@@ -26,7 +26,8 @@ export default function UsersGiftsList() {
     // Example data — replace or fetch dynamically
 
     const authState = useSelector((state: any) => state.auth)
-    const storedUser = window?.localStorage.getItem("userData");
+    const storedUser = null;
+    //window?.localStorage.getItem("userData"
     const userData = storedUser ? JSON.parse(storedUser) : null;
     const { data, isLoading, error , refetch} = useGetGiftsListQuery(
         { credentials: userData },
